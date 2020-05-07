@@ -1,5 +1,7 @@
 from tkinter import *
-from arduino_manager import ArduinoManager
+from controller import Controller
+from PIL import Image, ImageTk
+
 
 class FirmataView:
     def __init__(
@@ -18,24 +20,35 @@ class FirmataView:
         self._add_button(button_text)
 
         # working with Arduino by manager
-        self.arduino_manager = ArduinoManager()
+        self.controller = Controller()
 
     def clicked(self):
-        if not self.arduino_manager.pin_state[13]:
-            self.arduino_manager.on_13_pin()
+        if not self.controller.am.pin_state[13]:
+            self.controller.am.on_13_pin()
         else:
-            if self.arduino_manager.pin_state[13] == 'HIGH':
-                self.arduino_manager.off_13_pin()
+            if self.controller.am.pin_state[13] == 'HIGH':
+                self.controller.am.off_13_pin()
             else:
-                self.arduino_manager.on_13_pin()
+                self.controller.am.on_13_pin()
 
-        self.lbl.configure(text=f"13 pin state: {self.arduino_manager.pin_state[13]}")
+        self.lbl1.configure(text=f"13 pin state: {self.controller.am.pin_state[13]}")
+
+    def read_data(self):
+        self.lbl2.configure(text=self.controller.write_data())
+
+        img = ImageTk.PhotoImage(Image.open("plot.png"))
+        lbl_img = Label(image=img)
+        lbl_img.image = img  # keep a reference!
+        lbl_img.grid(column=3, row=0)
 
     def _add_label(self, label_text):
-        self.lbl = Label(self.window, text=label_text)
-        self.lbl.grid(column=0, row=0)
+        self.lbl1 = Label(self.window, text=label_text)
+        self.lbl1.grid(column=0, row=0)
+        self.lbl2 = Label(self.window, text="Read data from Arduino")
+        self.lbl2.grid(column=0, row=1)
 
     def _add_button(self, button_text):
-        btn = Button(self.window, text=button_text, command=self.clicked)
-        btn.grid(column=1, row=0)
-
+        btn1 = Button(self.window, text=button_text, command=self.clicked)
+        btn1.grid(column=1, row=0)
+        btn2 = Button(self.window, text="Read", command=self.read_data)
+        btn2.grid(column=1, row=1)

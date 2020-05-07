@@ -7,5 +7,5 @@ from views import FirmataView
 
 # Main flow for ArduinoFirmataManager
 if __name__ == "__main__":
-    view = FirmataView()
+    view = FirmataView(winsize="840x480")
     view.window.mainloop()
